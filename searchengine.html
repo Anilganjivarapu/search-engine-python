@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dynamic Search Results</title>
+    <style>
+        body {
+            background-color: #f0f0f0;
+            font-family: Arial, sans-serif;
+        }
+
+        .search-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .search-box {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 300px;
+        }
+
+        .search-button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+
+        .search-results {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .result-item {
+            margin-bottom: 10px;
+        }
+
+        a {
+            text-decoration: none;
+            color: #0078d4;
+        }
+    </style>
+</head>
+<body>
+    <div class="search-container">
+        <h1>Dynamic Search Results</h1>
+        <input type="text" class="search-box" id="query" placeholder="Enter your search query">
+        <button class="search-button" onclick="search()">Search</button>
+    </div>
+    <div class="search-results" id="results">
+        <!-- Search results will be displayed here -->
+    </div>
+
+    <script>
+        function search() {
+            var query = document.getElementById("query").value;
+            var apiUrl = `https://en.wikipedia.org/w/api.php?action=query&format=json&list=search&srsearch=${query}&origin=*`;
+
+            fetch(apiUrl)
+                .then(response => response.json())
+                .then(data => {
+                    displayResults(data.query.search);
+                })
+                .catch(error => console.error(error));
+        }
+
+        function displayResults(results) {
+            var resultsContainer = document.getElementById("results");
+            resultsContainer.innerHTML = "";
+
+            if (results.length === 0) {
+                resultsContainer.innerHTML = "<p>No results found.</p>";
+                return;
+            }
+
+            results.forEach(result => {
+                var resultItem = document.createElement("div");
+                resultItem.classList.add("result-item");
+
+                var titleLink = document.createElement("a");
+                titleLink.href = `https://en.wikipedia.org/wiki/${result.title}`;
+                titleLink.textContent = result.title;
+                titleLink.target = "_blank";
+
+                var snippet = document.createElement("p");
+                snippet.textContent = result.snippet;
+
+                resultItem.appendChild(titleLink);
+                resultItem.appendChild(snippet);
+
+                resultsContainer.appendChild(resultItem);
+            });
+        }
+    </script>
+</body>
+</html>
